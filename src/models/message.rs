@@ -1,30 +1,18 @@
-use std::io::{self, Write, Read};
+use std::io::{Write, Read};
 use byteorder::{WriteBytesExt, ReadBytesExt, LittleEndian};
+use num_derive::FromPrimitive;
+use num_traits::FromPrimitive;
 use serde::Serialize;
 use crate::{Error, Result};
 
-
-#[derive(Debug, Copy, Clone, PartialEq)]
+#[repr(u32)]
+#[derive(Debug, Copy, Clone, PartialEq, FromPrimitive)]
 pub enum OpCode {
     Handshake,
     Frame,
     Close,
     Ping,
     Pong,
-}
-
-// FIXME: Use TryFrom trait when stable
-impl OpCode {
-    fn try_from(int: u32) -> Result<Self> {
-        match int {
-            0 => Ok(OpCode::Handshake),
-            1 => Ok(OpCode::Frame),
-            2 => Ok(OpCode::Close),
-            3 => Ok(OpCode::Ping),
-            4 => Ok(OpCode::Pong),
-            _ => Err(Error::Conversion)
-        }
-    }
 }
 
 #[derive(Debug, PartialEq, Clone)]
@@ -45,23 +33,20 @@ impl Message {
 
         bytes.write_u32::<LittleEndian>(self.opcode as u32)?;
         bytes.write_u32::<LittleEndian>(self.payload.len() as u32)?;
-        write!(bytes, "{}", self.payload)?;
+        bytes.write_all(self.payload.as_bytes())?;
 
         Ok(bytes)
     }
 
-    pub fn decode(bytes: &[u8]) -> Result<Self> {
-        let mut reader = io::Cursor::new(bytes);
-        let mut payload = String::new();
-
-        let opcode = OpCode::try_from(reader.read_u32::<LittleEndian>()?)?;
-        reader.read_u32::<LittleEndian>()?;
-        reader.read_to_string(&mut payload)?;
+    pub fn decode(mut bytes: &[u8]) -> Result<Self> {
+        let opcode = OpCode::from_u32(bytes.read_u32::<LittleEndian>()?).ok_or(Error::Conversion)?;
+        let len = bytes.read_u32::<LittleEndian>()? as usize;
+        let mut payload = String::with_capacity(len);
+        bytes.read_to_string(&mut payload)?;
 
         Ok(Self { opcode, payload })
     }
 }
-
 
 #[cfg(test)]
 mod tests {
@@ -82,8 +67,8 @@ mod tests {
 
     #[test]
     fn test_opcode() {
-        assert_eq!(OpCode::try_from(0).ok(), Some(OpCode::Handshake));
-        assert_eq!(OpCode::try_from(4).ok(), Some(OpCode::Pong));
-        assert_eq!(OpCode::try_from(5).ok(), None);
+        assert_eq!(OpCode::from_u32(0), Some(OpCode::Handshake));
+        assert_eq!(OpCode::from_u32(4), Some(OpCode::Pong));
+        assert_eq!(OpCode::from_u32(5), None);
     }
 }
