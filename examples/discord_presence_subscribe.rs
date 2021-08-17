@@ -9,7 +9,7 @@ use discord_rpc_client::{
 };
 
 fn main() {
-    TermLogger::init(LevelFilter::Debug, Config::default(), TerminalMode::Mixed).unwrap();
+    TermLogger::init(LevelFilter::Debug, Config::default(), TerminalMode::Mixed, ColorChoice::Auto).unwrap();
 
     let mut drpc = DiscordRPC::new(425407036495495169);
 

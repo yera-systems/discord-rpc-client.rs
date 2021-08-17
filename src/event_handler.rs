@@ -10,7 +10,7 @@ use crate::{
 };
 
 
-type Handler<'a> = Box<Fn(Context) + 'a + Send + Sync>;
+type Handler<'a> = Box<dyn Fn(Context) + 'a + Send + Sync>;
 
 type HandlerList<'a> = Vec<Handler<'a>>;
 

@@ -1,5 +1,5 @@
 use std::{
-    error::Error as StdError,
+    borrow::Cow,
     io::Error as IoError,
     result::Result as StdResult,
     sync::mpsc::RecvTimeoutError as ChannelTimeout,
@@ -24,20 +24,16 @@ pub enum Error {
 
 impl Display for Error {
     fn fmt(&self, f: &mut Formatter) -> fmt::Result {
-        f.write_str(self.description())
-    }
-}
+        let msg = match self {
+            Error::Conversion => Cow::Borrowed("Failed to convert values"),
+            Error::SubscriptionFailed => Cow::Borrowed("Failed to subscribe to event"),
+            Error::ConnectionClosed => Cow::Borrowed("Connection closed"),
+            Error::IoError(ref err) => Cow::Owned(err.to_string()),
+            Error::JsonError(ref err) => Cow::Owned(err.to_string()),
+            Error::Timeout(ref err) => Cow::Owned(err.to_string()),
+        };
 
-impl StdError for Error {
-    fn description(&self) -> &str {
-        match *self {
-            Error::Conversion => "Failed to convert values",
-            Error::SubscriptionFailed => "Failed to subscribe to event",
-            Error::ConnectionClosed => "Connection closed",
-            Error::IoError(ref err) => err.description(),
-            Error::JsonError(ref err) => err.description(),
-            Error::Timeout(ref err) => err.description(),
-        }
+        f.write_str(&msg)
     }
 }
 
