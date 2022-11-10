@@ -1,8 +1,7 @@
 use std::{
     collections::HashMap,
-    sync::Arc,
+    sync::{Arc, RwLock},
 };
-use parking_lot::RwLock;
 use serde_json::Value as JsonValue;
 use crate::{
     models::Event,
@@ -41,13 +40,13 @@ impl<'a> HandlerRegistry<'a> {
     pub fn register<F>(&mut self, event: Event, handler: F)
         where F: Fn(Context) + 'a + Send + Sync
     {
-        let mut event_handlers = self.handlers.write();
+        let mut event_handlers = self.handlers.write().unwrap();
         let event_handler = event_handlers.entry(event).or_default();
         event_handler.push(Box::new(handler));
     }
 
     pub fn handle(&mut self, event: Event, data: JsonValue) -> Result<()> {
-        let handlers = self.handlers.read();
+        let handlers = self.handlers.read().unwrap();
         if let Some(handlers) = handlers.get(&event) {
             let context = Context::new(data);
 
@@ -72,7 +71,7 @@ mod tests {
         registry.register(Event::Ready, |_| unimplemented!());
         registry.register(Event::Error, |_| unimplemented!());
 
-        let handlers = registry.handlers.read();
+        let handlers = registry.handlers.read().unwrap();
         assert_eq!(handlers.len(), 2);
         assert_eq!(handlers[&Event::Ready].len(), 2);
         assert_eq!(handlers[&Event::Error].len(), 1);

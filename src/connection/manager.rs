@@ -1,12 +1,11 @@
 use std::{
     thread,
-    sync::Arc,
+    sync::{Arc, Mutex},
     time,
     io::ErrorKind
 };
 use log::{debug, error};
 use crossbeam_channel::{unbounded, Receiver, Sender};
-use parking_lot::Mutex;
 use serde_json::Value as JsonValue;
 use super::{
     Connection,
@@ -107,7 +106,7 @@ fn send_and_receive_loop(mut manager: Manager) {
 
         match *connection {
             Some(ref conn) => {
-                let mut connection = conn.lock();
+                let mut connection = conn.lock().unwrap();
                 match send_and_receive(&mut *connection, &mut manager.event_handler_registry, &mut inbound, &outbound) {
                     Err(Error::IoError(ref err)) if err.kind() == ErrorKind::WouldBlock => (),
                     Err(Error::IoError(_)) | Err(Error::ConnectionClosed) => manager.disconnect(),
