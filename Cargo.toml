@@ -7,7 +7,7 @@ license     = "MIT"
 readme      = "README.md"
 repository  = "https://gitlab.com/valeth/discord-rpc-client.rs.git"
 version     = "0.3.0"
-edition     = "2018"
+edition     = "2021"
 
 [badges]
 travis-ci   = { repository = "valeth/discord-rpc-client.rs" }
@@ -20,16 +20,16 @@ serde_derive      = "^1.0"
 serde_json        = "^1.0"
 byteorder         = "^1.4"
 log               = "^0.4"
-bytes             = "^1.2"
+bytes             = "^1.5"
 crossbeam-channel = "^0.5"
-num-derive        = "^0.3"
+num-derive        = "^0.4"
 num-traits        = "^0.2"
 
 [target.'cfg(windows)'.dependencies]
 named_pipe   = "0.4.1"
 
 [dependencies.uuid]
-version  = "^1.2"
+version  = "^1.4"
 features = ["v4"]
 
 [dev-dependencies]
