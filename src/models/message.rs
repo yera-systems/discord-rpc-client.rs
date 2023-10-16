@@ -1,4 +1,4 @@
-use std::io::{Write, Read};
+use std::{io::{Write, Read}, mem::size_of};
 use byteorder::{WriteBytesExt, ReadBytesExt, LittleEndian};
 use num_derive::FromPrimitive;
 use num_traits::FromPrimitive;
@@ -29,10 +29,11 @@ impl Message {
     }
 
     pub fn encode(&self) -> Result<Vec<u8>> {
-        let mut bytes: Vec<u8> = vec![];
+        let payload_len = self.payload.len();
+        let mut bytes: Vec<u8> = Vec::with_capacity(2 * size_of::<u32>() + payload_len);
 
         bytes.write_u32::<LittleEndian>(self.opcode as u32)?;
-        bytes.write_u32::<LittleEndian>(self.payload.len() as u32)?;
+        bytes.write_u32::<LittleEndian>(payload_len as u32)?;
         bytes.write_all(self.payload.as_bytes())?;
 
         Ok(bytes)
