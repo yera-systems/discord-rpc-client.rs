@@ -5,7 +5,6 @@ use std::{
     thread,
     time
 };
-use bytes::BytesMut;
 use serde_json::json;
 use log::{debug, error};
 use crate::{
@@ -87,8 +86,7 @@ pub trait Connection: Sized {
 
     /// Receive a message from the server.
     fn recv(&mut self) -> Result<Message> {
-        let mut buf = BytesMut::new();
-        buf.resize(1024, 0);
+        let mut buf = [0; 1024];
         let n = self.socket().read(&mut buf)?;
         debug!("Received {} bytes", n);
 
