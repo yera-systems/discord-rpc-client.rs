@@ -76,7 +76,7 @@ builder!{ActivityAssets
 }
 
 builder!{ActivityParty
-    id: u32,
+    id: String,
     size: (u32, u32),
 }
 
