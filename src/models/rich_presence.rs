@@ -40,6 +40,46 @@ impl SendActivityJoinInviteArgs {
     }
 }
 
+
+#[derive(Debug, PartialEq, Deserialize, Serialize)]
+pub struct ActivityButtons(Vec<ActivityButton>);
+
+impl ActivityButtons {
+    pub fn new() -> Self {
+        Self::default()
+    }
+
+    pub fn add_button<S>(mut self, label: S, url: S) -> Self 
+    where S: Into<String>
+    {
+        if self.0.len() >= 2 {
+            panic!("Cannot add more than 2 buttons");
+        }
+        self.0.push(ActivityButton::new(label, url));
+        self
+    }
+}
+
+impl Default for ActivityButtons {
+    fn default() -> Self {
+        Self(Vec::new())
+    }
+}
+
+#[derive(Debug, PartialEq, Deserialize, Serialize)]
+struct ActivityButton {
+    pub label: String,
+    pub url: String
+}
+
+impl ActivityButton {
+    fn new<S>(label: S, url: S) -> Self 
+    where S: Into<String> 
+    {
+        Self { label: label.into(), url: url.into() }
+    }
+}
+
 builder!{ActivityJoinEvent
     secret: String,
 }
@@ -60,6 +100,7 @@ builder!{Activity
     timestamps: ActivityTimestamps func,
     assets: ActivityAssets func,
     party: ActivityParty func,
+    buttons: ActivityButtons func,
     secrets: ActivitySecrets func,
 }
 
@@ -93,6 +134,15 @@ mod tests {
     use serde_json;
 
     #[test]
+    #[should_panic]
+    fn check_buttons_panic() {
+        ActivityButtons::new()
+        .add_button("Rusty", "https://example.com/")
+        .add_button("Rusty 2", "https://example.com/")
+        .add_button("Rusty 3", "https://example.com/");
+    }
+
+    #[test]
     fn can_serialize_full_activity() {
         let expected = include_str!("../../tests/fixtures/activity_full.json");
 
@@ -109,16 +159,16 @@ mod tests {
                 .small_image("rusting")
                 .small_text("Rusting..."))
             .party(|p| p
-                .id(1)
+                .id("1")
                 .size((3, 6)))
             .secrets(|s| s
                 .join("025ed05c71f639de8bfaa0d679d7c94b2fdce12f")
                 .spectate("e7eb30d2ee025ed05c71ea495f770b76454ee4e0")
-                .game("4b2fdce12f639de8bfa7e3591b71a0d679d7c93f"));
+                .game("4b2fdce12f639de8bfa7e3591b71a0d679d7c93f"))
+            .buttons(|b| b.add_button("Rusty", "https://example.com/"));
 
         let json = serde_json::to_string_pretty(&activity).unwrap();
-
-        assert_eq!(expected, json);
+        assert_eq!(expected.replace("\r", ""), json);
     }
 
     #[test]
