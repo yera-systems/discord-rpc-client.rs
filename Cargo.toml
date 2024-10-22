@@ -10,7 +10,6 @@ version     = "0.4.0"
 edition     = "2021"
 
 [badges]
-appveyor    = { repository = "valeth/discord-rpc-client.rs", service = "gitlab" }
 maintenance = { status = "experimental" }
 
 [dependencies]
@@ -27,7 +26,7 @@ num-traits        = "^0.2"
 named_pipe   = "0.4.1"
 
 [dependencies.uuid]
-version  = "^1.4"
+version  = "^1.11"
 features = ["v4"]
 
 [dev-dependencies]

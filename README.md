@@ -1,4 +1,4 @@
-[![Build status][appveyor-ci-badge]][appveyor-ci-page] [![crates.io][crates-io-badge-ver]][crates-io-page] [![crates.io][crates-io-badge-dl]][crates-io-page] [![Discord][discord-badge]][discord-invite]
+[![crates.io][crates-io-badge-ver]][crates-io-page] [![crates.io][crates-io-badge-dl]][crates-io-page] [![Discord][discord-badge]][discord-invite]
 
 
 # Discord RPC Client
@@ -67,7 +67,5 @@ See [CONTRIBUTING.md](CONTRIBUTING.md)
 [crates-io-badge-ver]: https://img.shields.io/crates/v/discord-rpc-client.svg
 [crates-io-badge-dl]: https://img.shields.io/crates/d/discord-rpc-client.svg
 [crates-io-page]: https://crates.io/crates/discord-rpc-client
-[appveyor-ci-badge]: https://ci.appveyor.com/api/projects/status/3fba86eipx0sgsjp?svg=true
-[appveyor-ci-page]: https://ci.appveyor.com/project/valeth/discord-rpc-client-rs
 [discord-invite]: https://discordapp.com/invite/zfavwrA
 [discord-badge]: https://discordapp.com/api/guilds/200751504175398912/widget.png
