@@ -109,7 +109,7 @@ mod tests {
                 .small_image("rusting")
                 .small_text("Rusting..."))
             .party(|p| p
-                .id(1)
+                .id("aPartyId")
                 .size((3, 6)))
             .secrets(|s| s
                 .join("025ed05c71f639de8bfaa0d679d7c94b2fdce12f")
