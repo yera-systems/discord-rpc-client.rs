@@ -1,0 +1,24 @@
+name: Rust
+
+on:
+  push:
+    branches: [ "master" ]
+  pull_request:
+    branches: [ "master" ]
+
+env:
+  CARGO_TERM_COLOR: always
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Build
+      run: cargo build --verbose
+    - name: Run tests without default features
+      run: cargo test --tests --no-default-features --verbose
+    - name: Run tests with rich_presence feature
+      run: cargo test --tests --no-default-features --features "rich_presence" --example "discord_presence" --example "discord_presence_subscribe" --verbose
