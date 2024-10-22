@@ -1,5 +1,5 @@
 use std::{
-    io::{Write, Read, ErrorKind},
+    io::{ErrorKind, Read, Write},
     marker::Sized,
     path::PathBuf,
     thread,
@@ -44,7 +44,9 @@ pub trait Connection: Sized {
 
     /// The full socket path.
     fn socket_path(n: u8) -> PathBuf {
-        Self::ipc_path().join(format!("discord-ipc-{}", n))
+        let mut path = Self::ipc_path();
+        path.push(format!("discord-ipc-{}", n));
+        path
     }
 
     /// Perform a handshake on this socket connection.
